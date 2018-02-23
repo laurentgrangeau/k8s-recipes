@@ -1,7 +1,8 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: ghost-deployment
+  name: ghost
+  namespace: ghostblog
   labels:
     app: ghost
 spec:
@@ -18,10 +19,12 @@ spec:
       - name: ghost
         image: ghost:1.21.3
         env:
+        - name: url
+          value:  https://blog.laurentgrangeau.fr
         - name: database__client
           value:  mysql
         - name: database__connection__host
-          value:  default.mariadb
+          value:  mariadb.ghostblog.svc.cluster.local
         - name: database__connection__database
           value:  ghost
         - name: database__connection__user
