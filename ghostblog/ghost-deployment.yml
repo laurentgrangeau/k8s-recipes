@@ -1,0 +1,45 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: ghost-deployment
+  labels:
+    app: ghost
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ghost
+  template:
+    metadata:
+      labels:
+        app: ghost
+    spec:
+      containers:
+      - name: ghost
+        image: ghost:1.21.3
+        env:
+        - name: database__client
+          value:  mysql
+        - name: database__connection__host
+          value:  default.mariadb
+        - name: database__connection__database
+          value:  ghost
+        - name: database__connection__user
+          valueFrom:
+            secretKeyRef:
+              name: ghost
+              key: database-connection-user
+        - name: database__connection__password
+          valueFrom:
+            secretKeyRef:
+              name: ghost
+              key: database-connection-password
+        ports:
+        - containerPort: 2368
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/ghost/content
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: ghost
